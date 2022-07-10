@@ -19,7 +19,7 @@ import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 /// Replace 'dart:io' for Web applications
 import 'package:universal_platform/universal_platform.dart';
 
-/// The State Object seen as the 'View of the State.'
+/// The extension of the State class.
 /// Uses the mixins: WidgetsBindingObserver, _ControllerList, _StateListeners
 abstract class StateX<T extends StatefulWidget> extends State<StatefulWidget>
     with
@@ -1597,20 +1597,20 @@ mixin FutureBuilderStateMixin<T extends StatefulWidget> on State<T> {
   bool onAsyncError(FlutterErrorDetails details) => false;
 }
 
-/// Main or first class to pass to the 'main.dart' file's runApp() function.
-abstract class AppStatefulWidget extends StatefulWidget {
-  /// Its sole purpose is to create the 'App State object', AppStateMVC.
-  const AppStatefulWidget({super.key});
-
-  /// You create the App's State object.
-  /// Return a type AppStateMVC that extends State<AppStatefulWidgetMVC>
-  @override
-  AppStateX createState();
-}
+// /// Main or first class to pass to the 'main.dart' file's runApp() function.
+// abstract class AppStatefulWidget extends StatefulWidget {
+//   /// Its sole purpose is to create the 'App State object', AppStateMVC.
+//   const AppStatefulWidget({super.key});
+//
+//   /// You create the App's State object.
+//   /// Return a type AppStateMVC that extends State<AppStatefulWidgetMVC>
+//   @override
+//   AppStateX createState();
+// }
 
 /// The StateX object at the 'app level.' Used to effect the whole app and
 /// is the State class for the StatefulWidget, AppStatefulWidgetMVC.
-abstract class AppStateX<T extends AppStatefulWidget>
+abstract class AppStateX<T extends StatefulWidget>
     extends InheritedStateX<T, _AppInheritedWidget> {
   /// Optionally supply as many State Controllers as you like to work with this App.
   /// Optionally supply a 'data object' to to be accessible to the App's InheritedWidget.
@@ -1792,9 +1792,9 @@ class _AppInheritedWidget extends InheritedWidget {
   ///
   _AppInheritedWidget({
     Key? key,
-    required Widget child,
+    required super.child,
   })  : dataObject = _RootStateMixin._rootStateX?._dataObj,
-        super(key: key, child: child);
+        super(key: key);
 
   final Object? dataObject;
 
@@ -1809,8 +1809,10 @@ class _AppInheritedWidget extends InheritedWidget {
       /// if StateSet objects were implemented and this wasn't called within one.
       notify = !rootState._inSetStateBuilder;
 
-      // /// if the 'object' value has changed.
-      // notify = dataObject != oldWidget.dataObject;
+      if (!notify) {
+        /// if the 'object' value has changed.
+        notify = dataObject != oldWidget.dataObject;
+      }
     }
     return notify;
   }
@@ -1861,7 +1863,7 @@ class SetState extends StatelessWidget {
 mixin _RootStateMixin {
   ///Record the 'root' StateX object
   void _setRootStateX(StateX state) {
-    //
+    // This can only be called once successfully. Subsequent calls are ignored.
     if (_rootStateX == null && state is AppStateX) {
       //
       _rootStateX = state;

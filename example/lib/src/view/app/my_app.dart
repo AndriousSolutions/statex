@@ -8,7 +8,7 @@ import 'package:example/src/view.dart';
 
 /// To be passed to the runApp() function.
 /// This is the app's first StatefulWidget.
-class MyApp extends AppStatefulWidget {
+class MyApp extends StatefulWidget {
   /// A constant constructor
   const MyApp({Key? key}) : super(key: key);
 
